@@ -6,14 +6,10 @@ import { verify_token } from './lib/verify.js';
 
 dotenv.config();
 
-import https from 'node:https';
-import fs from 'node:fs';
-import os from 'node:os';
-
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const root = path.join(__dirname, 'dist');
 
-const PORT = 3000;
+const PORT = 80;
 const rand_code = Math.floor(Math.random() * 100000000);
 
 const app = express();
@@ -54,11 +50,4 @@ app.all('*', (_, res) => {
     res.sendStatus(404);
 });
 
-// app.listen(PORT, () => console.log(`Listening on port ${PORT}`));
-
-const https_cred_path = `${ os.homedir() }/.office-addin-dev-certs`
-const private_key = fs.readFileSync(`${https_cred_path}/localhost.key`);
-const certificate = fs.readFileSync(`${https_cred_path}/localhost.crt`);
-const ca_cert = fs.readFileSync(`${https_cred_path}/ca.crt`)
-
-https.createServer({ key: private_key, cert: certificate, ca: ca_cert }, app).listen(PORT);
+app.listen(PORT, () => console.log(`Listening on port ${PORT}`));
