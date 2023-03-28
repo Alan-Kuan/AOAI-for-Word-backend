@@ -1,0 +1,3 @@
+[submodule "AOAI-for-Word"]
+	path = frontend
+	url = https://github.com/Alan-Kuan/AOAI-for-Word
