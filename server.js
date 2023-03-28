@@ -1,8 +1,64 @@
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import express from 'express';
+import * as dotenv from 'dotenv';
+import { verify_token } from './lib/verify.js';
 
-const PORT = 80;
+dotenv.config();
+
+import https from 'node:https';
+import fs from 'node:fs';
+import os from 'node:os';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const root = path.join(__dirname, 'dist');
+
+const PORT = 3000;
+const rand_code = Math.floor(Math.random() * 100000000);
+
 const app = express();
 
-app.use(express.static('dist'));
+app.set('view engine', 'ejs');
 
-app.listen(PORT, () => console.log(`Listening on port: ${PORT}`));
+const public_dir = [
+    'assets',
+    'login',
+    'login_dialog',
+];
+
+for (const dir of public_dir) {
+    app.use(`/${dir}`, express.static(path.join(root, dir)));
+}
+
+app.get(`/`, async (req, res) => {
+    const token = req.query.token;
+    const verified = await verify_token(token);
+    if (!verified) {
+        res.redirect('/login');
+        return;
+    }
+    res.render('index', { code: rand_code });
+});
+
+app.get(`/main.js`, (req, res) => {
+    const code = req.query.code;
+    if (!code || parseInt(code, 10) !== rand_code) {
+        res.sendStatus(401);
+        return;
+    }
+    const file_path = path.join(root, 'main.js');
+    res.sendFile(file_path);
+});
+
+app.all('*', (_, res) => {
+    res.sendStatus(404);
+});
+
+// app.listen(PORT, () => console.log(`Listening on port ${PORT}`));
+
+const https_cred_path = `${ os.homedir() }/.office-addin-dev-certs`
+const private_key = fs.readFileSync(`${https_cred_path}/localhost.key`);
+const certificate = fs.readFileSync(`${https_cred_path}/localhost.crt`);
+const ca_cert = fs.readFileSync(`${https_cred_path}/ca.crt`)
+
+https.createServer({ key: private_key, cert: certificate, ca: ca_cert }, app).listen(PORT);
