@@ -9,6 +9,7 @@ FROM node:18-alpine AS runtime
 RUN npm install -g pnpm
 WORKDIR /app
 COPY --from=build /frontend/dist /app/dist
+COPY ./lib /app/lib
 COPY ./server.js /app
 COPY ./package.json /app
 COPY ./pnpm-lock.yaml /app
