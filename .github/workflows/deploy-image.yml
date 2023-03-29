@@ -41,3 +41,7 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+
+      - name: Post App Service Deployment Webhook
+        run: |
+          curl -X POST ${{ secrets.AZ_APP_SVC_WEBHOOK_URL }}
