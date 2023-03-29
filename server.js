@@ -39,6 +39,7 @@ app.get(`/`, async (req, res) => {
 app.get(`/main.js`, (req, res) => {
     const code = req.query.code;
     if (!code || parseInt(code, 10) !== rand_code) {
+        console.log('Random code did not match');
         res.sendStatus(401);
         return;
     }
