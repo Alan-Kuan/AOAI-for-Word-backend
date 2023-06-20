@@ -2,9 +2,11 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import express from 'express';
 import * as dotenv from 'dotenv';
+import { load_env_config } from './lib/config.js';
 import { verify_token } from './lib/verify.js';
 
 dotenv.config();
+await load_env_config();
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const root = path.join(__dirname, 'dist');
