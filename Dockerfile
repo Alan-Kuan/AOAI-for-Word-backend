@@ -10,7 +10,6 @@ RUN npm install -g pnpm
 WORKDIR /app
 COPY --from=build /frontend/dist ./dist
 COPY ./lib ./lib
-COPY ./.env ./
 COPY ./server.js ./
 COPY ./package.json ./
 COPY ./pnpm-lock.yaml ./
